@@ -91,44 +91,57 @@ class json2can(Node):
         # #+++++++++++++++++++++++++++
         
 
+# Path to the JSON file that stores CAN format data
+path = '/home/andre_cuau/ros2_ws/src/sub_can_processing_single/sub_can_processing_single/CAN_format_default.json'
 
-        path = '/home/andre_cuau/ros2_ws/src/sub_can_processing_single/sub_can_processing_single/CAN_format_default.json'
-        with open(path, 'r') as file:
-            json_data = file.read()
+# Open the JSON file in read mode
+with open(path, 'r') as file:
+    # Read the contents of the file as a string
+    json_data = file.read()
 
-        my_dict = json.loads(json_data)
+# Load the JSON data as a Python dictionary
+my_dict = json.loads(json_data)
 
-   
-        self.dict = my_dict
+# Store the loaded dictionary in the object dict variable
+self.dict = my_dict
+
+# Initialize an empty list to store the keys from the dictionary
+keys = []
+key = ""
+
+# Loop through all the keys in the dictionary and append them to 'keys' list
+for k in self.dict.keys():
+    keys.append(k)
+
+print("KEY AND DICT:")
+
+# Set the 'key' variable to the current key based on 'json2can.index'
+# 'json2can.index' is an index that keeps track of the current key being processed
+key = keys[json2can.index]
+# Increment the index for the next key
+json2can.index += 1
+
+# If index greater than number of keys, last key has been reached
+if json2can.index + 1 > len(keys):
+    print(f"{key} is the last key")
+
+# Print the current key being processed
+print(key)
+
+# Create a new dictionary with the current key and its associated value from the original dictionary
+key_dict = {key: self.dict[key]}
+
+# Print the newly created dictionary for the current key
+print(key_dict)
+print()
+
+# Store the key-specific dictionary in the 'can_msg_DICT' attribute
+self.can_msg_DICT = key_dict
+
+self.flag = False
 
 
-
-        keys = []
-        key = ""
-    
-        for k in self.dict.keys():
-            keys.append(k)
-            
-        print("KEY AND DICT:")
-
-        
-       
-        key = keys[json2can.index]
-        json2can.index += 1
-
-        if json2can.index + 1 > len(keys):
-            print(f"{key} is the last key")
-        
-        print(key)
-        key_dict = {key: self.dict[key]}
-        print(key_dict)
-        print()
-        self.can_msg_DICT = key_dict
-        
-
-
-        self.flag=False
-        self.lock=Lock()
+self.lock = Lock()
 
         #Init Can Parameters
         #The path of the ADC_SC.dbc
